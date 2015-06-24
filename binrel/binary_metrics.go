@@ -24,7 +24,7 @@ func SP(run Ranking, depth, R uint) float64 {
 	for i := uint(0); i < depth; i++ {
 		score := run & (1 << i) // the gain function we use is 0 -> 0, 1 -> 1
 		if score != 0 {
-			sp += float64(1) * PatK(run, i+1, R)
+			sp += float64(1) * Precision(run, i+1, R)
 		}
 	}
 
@@ -42,7 +42,7 @@ func MRR(run Ranking, depth, R uint) float64 {
 	return 0
 }
 
-func R_at_K(run Ranking, depth, R uint) float64 {
+func Recall(run Ranking, depth, R uint) float64 {
 	found := 0
 	for i := uint(0); i < depth; i++ {
 		score := run & (1 << i)
@@ -54,7 +54,7 @@ func R_at_K(run Ranking, depth, R uint) float64 {
 	return float64(found) / float64(R)
 }
 
-func PatK(run Ranking, depth, R uint) float64 {
+func Precision(run Ranking, depth, R uint) float64 {
 	found := 0
 	for i := uint(0); i < depth; i++ {
 		score := run & (1 << i)
@@ -68,49 +68,38 @@ func PatK(run Ranking, depth, R uint) float64 {
 
 func RPrec(run Ranking, depth, R uint) float64 {
 	if depth <= R {
-		return PatK(run, depth, R)
+		return Precision(run, depth, R)
 	} else {
-		return PatK(run, depth, depth)
+		return Precision(run, depth, depth)
 	}
+}
+
+func rbp(run Ranking, depth, R uint, p float64) float64 {
+	for i := uint(0); i < depth; i++ {
+		score := run & (1 << i)
+		if score != 0 {
+			rbp += float64(1) * (math.Pow(p, float64(i)))
+		}
+	}
+	return rbp * (float64(1) - p)
 }
 
 // returns the rbp0.95 score as a float64
 func RBP95(run Ranking, depth, R uint) float64 {
 	rbp := float64(0)
-	p := 0.95
-	for i := uint(0); i < depth; i++ {
-		score := run & (1 << i)
-		if score != 0 {
-			rbp += float64(1) * (math.Pow(p, float64(i)))
-		}
-	}
-	return rbp * (float64(1) - p)
+	return rbp(run,depth,R,0.95)
 }
 
 // returns the rbp0.50 score as a float64
 func RBP50(run Ranking, depth, R uint) float64 {
 	rbp := float64(0)
-	p := 0.50
-	for i := uint(0); i < depth; i++ {
-		score := run & (1 << i)
-		if score != 0 {
-			rbp += float64(1) * (math.Pow(p, float64(i)))
-		}
-	}
-	return rbp * (float64(1) - p)
+	return rbp(run,depth,R,0.5)
 }
 
 // returns the rbp0.85 score as a float64
 func RBP85(run Ranking, depth, R uint) float64 {
 	rbp := float64(0)
-	p := 0.85
-	for i := uint(0); i < depth; i++ {
-		score := run & (1 << i)
-		if score != 0 {
-			rbp += float64(1) * (math.Pow(p, float64(i)))
-		}
-	}
-	return rbp * (float64(1) - p)
+	return rbp(run,depth,R,0.85)
 }
 
 // returns the sdcg score as a float64
