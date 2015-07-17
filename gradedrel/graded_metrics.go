@@ -10,50 +10,38 @@ func ERR(run Ranking,depth, R uint) float64 {
     err := float64(0)
 	for i := uint(0); i < depth ; i++ {
         score := (uint(run) >> (i*2)) & uint(3)
-        err += p * (float64(score) / float64(i+1))
-        p = p * float64(1-score)
+        probRelevant := (math.Pow(float64(2),float64(score)) - 1 )/ (math.Pow(float64(2),float64(3)) )
+        err += p * (float64(probRelevant) / float64(i+1))
+        p = p * float64(1-probRelevant)
+        
     }
     return err
 }
 
-// returns the rbp0.95 score as a float64
-func rbp95(run Ranking,depth,R uint) float64 {
-	log.Fatal("Unimplemented")
-	rbp := float64(0)
-	p := 0.95
+func RBP(run Ranking,depth,R uint, p float64) float64 {
+    rbp := 0.0
 	for i := uint(0); i < depth ; i++ {
 		score := (uint(run) >> (i*2)) & uint(3)
+        gain := math.Pow(float64(2),float64(score)) / (math.Pow(float64(2),float64(3)) )
 		if(score != 0) {
-			rbp += float64(1) * (math.Pow(p,float64(i)))
+			rbp += float64(gain) * (math.Pow(p,float64(i)))
 		}
 	}
 	return rbp * (float64(1) - p)
+}
+
+// returns the rbp0.95 score as a float64
+func RBP95(run Ranking,depth,R uint) float64 {
+	return RBP(run,depth, R, 0.95)
 }
 // returns the rbp0.50 score as a float64
-func rbp50(run Ranking,depth,R uint) float64 {
-	log.Fatal("Unimplemented")
-	rbp := float64(0)
-	p := 0.50
-	for i := uint(0); i < depth ; i++ {
-		score := (uint(run) >> (i*2)) & uint(3)
-		if(score != 0) {
-			rbp += float64(1) * (math.Pow(p,float64(i)))
-		}
-	}
-	return rbp * (float64(1) - p)
+func RBP50(run Ranking,depth,R uint) float64 {
+	return RBP(run,depth, R, 0.50)
 }
+
 // returns the rbp0.85 score as a float64
-func rbp85(run Ranking,depth,R uint) float64 {
-	log.Fatal("Unimplemented")
-	rbp := float64(0)
-	p := 0.85
-	for i := uint(0); i < depth ; i++ {
-		score := (uint(run) >> (i*2)) & uint(3)
-		if(score != 0) {
-			rbp += float64(1) * (math.Pow(p,float64(i)))
-		}
-	}
-	return rbp * (float64(1) - p)
+func RBP85(run Ranking,depth,R uint) float64 {
+	return RBP(run,depth, R, 0.85)
 }
 
 // returns the sdcg score as a float64
