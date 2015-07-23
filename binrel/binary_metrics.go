@@ -73,7 +73,7 @@ func RPrec(run Ranking, depth, R uint) float64 {
 	}
 }
 
-func rbp(run Ranking, depth, R uint, p float64) float64 {
+func RBP(run Ranking, depth, R uint, p float64) float64 {
 	rbp := float64(0)
 	for i := uint(0); i < depth; i++ {
 		score := run & (1 << i)
@@ -86,17 +86,17 @@ func rbp(run Ranking, depth, R uint, p float64) float64 {
 
 // returns the rbp0.95 score as a float64
 func RBP95(run Ranking, depth, R uint) float64 {
-	return rbp(run, depth, R, 0.95)
+	return RBP(run, depth, R, 0.95)
 }
 
 // returns the rbp0.50 score as a float64
 func RBP50(run Ranking, depth, R uint) float64 {
-	return rbp(run, depth, R, 0.5)
+	return RBP(run, depth, R, 0.5)
 }
 
 // returns the rbp0.85 score as a float64
 func RBP85(run Ranking, depth, R uint) float64 {
-	return rbp(run, depth, R, 0.85)
+	return RBP(run, depth, R, 0.85)
 }
 
 // returns the sdcg score as a float64
